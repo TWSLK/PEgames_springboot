@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sport.games.dao.ActivityMapper" >
+    <resultMap id="BaseResultMap" type="com.sport.games.entity.Activity">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="data" property="data"/>
+        <result column="item_json" property="itemJson"/>
+    </resultMap>
+<!-- 对应ActivityMapper的方法 -->
+    <select id="getAllActivity" resultMap="BaseResultMap">
+        select
+        id, name, start_time, end_time, item_json
+        from
+        t_activity
+        order by create_time desc
+    </select>
+
+    <insert id="save">
+        insert into
+        t_activity
+        values (#{id}, #{name}, #{startTime}, #{endTime}, now(), null, #{itemJson});
+    </insert>
+
+    <delete id="delete">
+        delete from
+        t_activity
+        where id = #{id}
+    </delete>
+
+    <select id="getById" resultMap="BaseResultMap">
+        select
+        *
+        from
+        t_activity
+        where id = #{id}
+    </select>
+
+    <update id="updateData">
+        update
+        t_activity t
+        set
+        t.data = #{data}
+        where
+        t.id = #{id}
+    </update>
+
+    <select id="getOngoingActivity" resultMap="BaseResultMap">
+        select
+        id, name, start_time, end_time, item_json
+        from
+        t_activity
+        where
+        end_time > now()
+    </select>
+
+    <select id="getHistoryActivity" resultMap="BaseResultMap">
+        select
+        id, name, start_time, end_time, item_json
+        from
+        t_activity
+        where
+        end_time &lt;= now()
+    </select>
+
+</mapper>

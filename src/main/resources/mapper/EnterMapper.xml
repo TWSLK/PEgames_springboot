@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sport.games.dao.EnterMapper" >
+    <resultMap id="BaseResultMap" type="com.sport.games.entity.Enter">
+        <id column="id" property="id"/>
+        <result column="member_id" property="memberId"/>
+        <result column="activity_id" property="activityId"/>
+        <result column="status" property="status"/>
+        <result column="result" property="result"/>
+        <result column="rank" property="rank"/>
+        <result column="item_id" property="itemId"/>
+
+        <result column="member_name" property="memberName"/>
+        <result column="member_account" property="memberAccount"/>
+        <result column="activity_name" property="activityName"/>
+        <result column="item_name" property="itemName"/>
+        <result column="unit" property="unit"/>
+        <result column="item_rank" property="itemRank"/>
+    </resultMap>
+
+
+    <select id="getNotCheckEnter" resultMap="BaseResultMap">
+        select
+        ten.*,
+        tme.name as member_name, tme.account as member_account,
+        tac.name as activity_name, tit.name as item_name, tit.unit,
+        tit.rank as item_rank
+        from t_enter ten
+        left join t_member tme on ten.member_id = tme.id
+        left join t_activity tac on ten.activity_id = tac.id
+        left join t_item tit on ten.item_id = tit.id
+        where ten.status = 0
+    </select>
+
+    <select id="getCheckedEnter" resultMap="BaseResultMap">
+        select
+        ten.*,
+        tme.name as member_name, tme.account as member_account,
+        tac.name as activity_name, tit.name as item_name, tit.unit,
+        tit.rank as item_rank
+        from t_enter ten
+        left join t_member tme on ten.member_id = tme.id
+        left join t_activity tac on ten.activity_id = tac.id
+        left join t_item tit on ten.item_id = tit.id
+        where ten.status = 1
+    </select>
+
+    <select id="getByActivityId" resultMap="BaseResultMap">
+        select
+        *
+        from
+        t_enter
+        where activity_id = #{id}
+    </select>
+
+    <update id="updateStatus">
+        update
+        t_enter
+        set status = #{status}
+        where id = #{id}
+    </update>
+
+    <update id="updateResult">
+        update
+        t_enter
+        set result = #{result}, status = 2
+        where id = #{id}
+    </update>
+
+    <select id="getResultCount" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        t_enter
+        WHERE activity_id = #{activityId}
+        AND item_id = #{itemId}
+    </select>
+
+    <select id="getByActivityIdAndItemId" resultMap="BaseResultMap">
+        select
+        ten.*,
+        tme.name as member_name, tme.account as member_account
+        from t_enter ten
+        left join t_member tme on ten.member_id = tme.id
+        where ten.status = 2
+        and ten.activity_id = #{activityId}
+        and ten.item_id = #{itemId}
+        order by ten.result
+        <if test="rank == 2">
+             desc
+        </if>
+    </select>
+
+    <update id="updateRank">
+        update
+        t_enter
+        set t_enter.rank = #{rank}
+        where id = #{id}
+    </update>
+    
+    <select id="getEnteredData" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        t_enter
+        WHERE member_id = #{memberId}
+        AND activity_id = #{activityId}
+        AND status >= 0
+    </select>
+
+    <insert id="insert">
+        INSERT INTO
+        t_enter (
+          id, member_id, activity_id,item_id,status
+        ) values (
+          #{id}, #{memberId}, #{activityId}, #{itemId}, 0
+        )
+    </insert>
+
+    <select id="getEnterByMemberId" resultMap="BaseResultMap">
+        SELECT
+        ten.*, tac.name as activity_name, tit.name as item_name, tit.unit
+        from
+        t_enter ten
+        left join t_activity tac on ten.activity_id = tac.id
+        left join t_item tit on ten.item_id = tit.id
+        where ten.member_id = #{memberId}
+        order by create_time desc
+    </select>
+
+    <delete id="deleteById">
+        DELETE
+        FROM
+        t_enter
+        WHERE id = #{id}
+        AND (
+          status = -1 or status = 0
+        )
+    </delete>
+
+</mapper>

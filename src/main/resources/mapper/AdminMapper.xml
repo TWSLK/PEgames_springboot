@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sport.games.dao.AdminMapper" >
+    <resultMap id="BaseResultMap" type="com.sport.games.entity.Admin">
+        <id column="id" property="id"/>
+        <result column="account" property="account"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+    </resultMap>
+
+    <select id="getByAccount" resultMap="BaseResultMap">
+        select
+        *
+        from
+        t_admin
+        where
+        account = #{account}
+    </select>
+
+    <select id="getById" resultMap="BaseResultMap">
+        select
+        *
+        from
+        t_admin
+        where
+        id = #{id}
+    </select>
+
+</mapper>
